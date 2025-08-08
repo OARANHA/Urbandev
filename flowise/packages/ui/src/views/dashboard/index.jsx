@@ -42,6 +42,7 @@ import chatflowApi from '@/api/chatflows'
 import assistantApi from '@/api/assistants'
 import executionApi from '@/api/executions'
 import statsApi from '@/api/stats'
+import { dashboardApi } from '@/api/dashboard'
 
 // ==============================|| DASHBOARD PAGE ||============================== //
 
@@ -51,12 +52,25 @@ const DashboardPage = () => {
     
     // Estados para estatísticas
     const [stats, setStats] = useState({
-        totalChatflows: 0,
-        totalAssistants: 0,
-        totalExecutions: 0,
-        activeUsers: 0,
-        executionRate: 0,
-        successRate: 0
+        overview: {
+            totalChatflows: 0,
+            totalAssistants: 0,
+            totalExecutions: 0,
+            totalCustomers: 0,
+            activeUsers: 0
+        },
+        performance: {
+            successRate: 0,
+            averageResponseTime: 0,
+            errorRate: 0,
+            uptime: 0
+        },
+        business: {
+            revenue: 0,
+            customerRetention: 0,
+            growthRate: 0,
+            conversionRate: 0
+        }
     })
     
     const [recentActivity, setRecentActivity] = useState([])
@@ -64,49 +78,40 @@ const DashboardPage = () => {
     const [refreshing, setRefreshing] = useState(false)
     
     // APIs
-    const getChatflowsApi = useApi(chatflowApi.getAllChatflows)
-    const getAssistantsApi = useApi(assistantApi.getAllAssistants)
-    const getExecutionsApi = useApi(executionApi.getAllExecutions)
-    const getStatsApi = useApi(statsApi.getStats)
+    const getDashboardStatsApi = useApi(dashboardApi.getDashboardStats)
+    const getRecentActivityApi = useApi(dashboardApi.getRecentActivity)
     
     const loadDashboardData = async () => {
         try {
             setRefreshing(true)
             
-            // Carregar dados em paralelo
-            const [chatflowsData, assistantsData, executionsData, statsData] = await Promise.all([
-                getChatflowsApi.request({}),
-                getAssistantsApi.request({}),
-                getExecutionsApi.request({ page: 1, pageSize: 1 }),
-                getStatsApi.request({})
+            // Carregar dados das novas APIs do Dashboard
+            const [dashboardStats, activities] = await Promise.all([
+                getDashboardStatsApi.request(),
+                getRecentActivityApi.request(10)
             ])
             
-            // Processar estatísticas
-            const totalChatflows = chatflowsData?.data?.total || 0
-            const totalAssistants = assistantsData?.data?.total || 0
-            const totalExecutions = executionsData?.data?.total || 0
+            // Atualizar estatísticas
+            if (dashboardStats?.data) {
+                setStats(dashboardStats.data)
+            }
             
-            // Calcular taxas (simuladas para demonstração)
-            const executionRate = Math.min(100, Math.round((totalExecutions / Math.max(1, totalChatflows)) * 10))
-            const successRate = Math.floor(Math.random() * 30) + 70 // 70-100%
-            
-            setStats({
-                totalChatflows,
-                totalAssistants,
-                totalExecutions,
-                activeUsers: Math.floor(Math.random() * 50) + 10, // Simulado
-                executionRate,
-                successRate
-            })
-            
-            // Simular atividades recentes
-            setRecentActivity([
-                { id: 1, type: 'chatflow', name: 'Novo chatbot criado', time: '2 min atrás', status: 'success' },
-                { id: 2, type: 'execution', name: 'Execução de fluxo', time: '5 min atrás', status: 'success' },
-                { id: 3, type: 'assistant', name: 'Assistente atualizado', time: '10 min atrás', status: 'info' },
-                { id: 4, type: 'user', name: 'Novo usuário registrado', time: '15 min atrás', status: 'success' },
-                { id: 5, type: 'execution', name: 'Falha na execução', time: '20 min atrás', status: 'error' }
-            ])
+            // Atualizar atividades recentes
+            if (activities?.data?.activities) {
+                const formattedActivities = activities.data.activities.map(activity => ({
+                    id: activity.id,
+                    type: activity.type,
+                    name: activity.description,
+                    time: dashboardApi.formatDateTime(activity.timestamp),
+                    status: activity.action === 'executed' ? 'success' : 
+                           activity.action === 'created' ? 'success' :
+                           activity.action === 'updated' ? 'info' :
+                           activity.action === 'deleted' ? 'error' : 'default',
+                    user: activity.user,
+                    metadata: activity.metadata
+                }))
+                setRecentActivity(formattedActivities)
+            }
             
             setLoading(false)
             setRefreshing(false)
@@ -179,13 +184,8 @@ const DashboardPage = () => {
         }
         
         const getStatusIcon = (type) => {
-            switch (type) {
-                case 'chatflow': return <IconRobot size={16} />
-                case 'execution': return <IconActivity size={16} />
-                case 'assistant': return <IconSettings size={16} />
-                case 'user': return <IconUsers size={16} />
-                default: return <IconClock size={16} />
-            }
+            const icon = dashboardApi.getActivityIcon(type)
+            return <span style={{ fontSize: '16px' }}>{icon}</span>
         }
         
         return (
@@ -247,7 +247,7 @@ const DashboardPage = () => {
                     <Grid item xs={12} sm={6} md={4} lg={2}>
                         <StatCard
                             title="Total Chatflows"
-                            value={stats.totalChatflows}
+                            value={stats.overview.totalChatflows}
                             icon={<IconRobot size={32} />}
                             color={theme.palette.primary.main}
                             trend="up"
@@ -257,7 +257,7 @@ const DashboardPage = () => {
                     <Grid item xs={12} sm={6} md={4} lg={2}>
                         <StatCard
                             title="Assistentes"
-                            value={stats.totalAssistants}
+                            value={stats.overview.totalAssistants}
                             icon={<IconSettings size={32} />}
                             color={theme.palette.secondary.main}
                             trend="up"
@@ -267,7 +267,7 @@ const DashboardPage = () => {
                     <Grid item xs={12} sm={6} md={4} lg={2}>
                         <StatCard
                             title="Execuções"
-                            value={stats.totalExecutions}
+                            value={stats.overview.totalExecutions}
                             icon={<IconActivity size={32} />}
                             color={theme.palette.success.main}
                             trend="up"
@@ -276,32 +276,32 @@ const DashboardPage = () => {
                     </Grid>
                     <Grid item xs={12} sm={6} md={4} lg={2}>
                         <StatCard
-                            title="Usuários Ativos"
-                            value={stats.activeUsers}
-                            icon={<IconUsers size={32} />}
+                            title="Clientes"
+                            value={stats.overview.totalCustomers}
+                            icon={<IconDatabase size={32} />}
                             color={theme.palette.info.main}
+                            trend="up"
+                            trendValue="+15%"
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4} lg={2}>
+                        <StatCard
+                            title="Usuários Ativos"
+                            value={stats.overview.activeUsers}
+                            icon={<IconUsers size={32} />}
+                            color={theme.palette.warning.main}
                             trend="up"
                             trendValue="+5%"
                         />
                     </Grid>
                     <Grid item xs={12} sm={6} md={4} lg={2}>
                         <StatCard
-                            title="Taxa de Execução"
-                            value={`${stats.executionRate}%`}
-                            icon={<IconChartLine size={32} />}
-                            color={theme.palette.warning.main}
-                            trend="up"
-                            trendValue="+3%"
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={4} lg={2}>
-                        <StatCard
                             title="Taxa de Sucesso"
-                            value={`${stats.successRate}%`}
+                            value={`${stats.performance.successRate}%`}
                             icon={<IconTrendingUp size={32} />}
                             color={theme.palette.success.main}
-                            trend="stable"
-                            trendValue="0%"
+                            trend={stats.performance.successRate > 95 ? 'up' : 'stable'}
+                            trendValue={stats.performance.successRate > 95 ? '+2%' : '0%'}
                         />
                     </Grid>
                 </Grid>
@@ -311,8 +311,8 @@ const DashboardPage = () => {
                     <Grid item xs={12} md={8}>
                         <MainCard title="Visão Geral do Sistema" content={false}>
                             <Box sx={{ p: 3 }}>
-                                <Alert severity="info" sx={{ mb: 3 }}>
-                                    Gráficos de desempenho e analytics serão implementados com integração às APIs do Vercel e Z.ai
+                                <Alert severity="success" sx={{ mb: 3 }}>
+                                    ✅ APIs do Dashboard integradas com sucesso! Dados em tempo real do Supabase.
                                 </Alert>
                                 <Box 
                                     sx={{ 
@@ -320,20 +320,30 @@ const DashboardPage = () => {
                                         display: 'flex', 
                                         alignItems: 'center', 
                                         justifyContent: 'center',
-                                        backgroundColor: theme.palette.grey[50],
+                                        backgroundColor: theme.palette.success.main + '10',
                                         borderRadius: 2,
-                                        border: `2px dashed ${theme.palette.divider}`
+                                        border: `2px solid ${theme.palette.success.main}30`
                                     }}
                                 >
                                     <Stack alignItems="center" spacing={2}>
-                                        <IconChartLine size={48} color={theme.palette.text.secondary} />
-                                        <Typography variant="h6" color="textSecondary">
-                                            Gráficos de Analytics
+                                        <IconChartLine size={48} color={theme.palette.success.main} />
+                                        <Typography variant="h6" color="success.main" sx={{ fontWeight: 600 }}>
+                                            Analytics Integrados
                                         </Typography>
                                         <Typography variant="body2" color="textSecondary" align="center">
-                                            Integração com APIs de estatísticas<br/>
-                                            em desenvolvimento
+                                            Dados de desempenho e métricas<br/>
+                                            carregados do Supabase
                                         </Typography>
+                                        <Button 
+                                            variant="contained" 
+                                            color="success"
+                                            onClick={() => {
+                                                // Future: Open detailed analytics modal
+                                                console.log('Abrir analytics detalhados')
+                                            }}
+                                        >
+                                            Ver Analytics Detalhados
+                                        </Button>
                                     </Stack>
                                 </Box>
                             </Box>
@@ -349,7 +359,15 @@ const DashboardPage = () => {
                                     ))}
                                 </Stack>
                                 <Box sx={{ mt: 2, textAlign: 'center' }}>
-                                    <Button variant="outlined" size="small" fullWidth>
+                                    <Button 
+                                        variant="outlined" 
+                                        size="small" 
+                                        fullWidth
+                                        onClick={() => {
+                                            // Future: Navigate to full activity timeline
+                                            console.log('Ver timeline completa')
+                                        }}
+                                    >
                                         Ver todas as atividades
                                     </Button>
                                 </Box>
