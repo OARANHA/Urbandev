@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 // material-ui
-import { Stack, useTheme, Typography, Box, Alert, Button, Divider, Icon } from '@mui/material'
+import { Stack, useTheme, Typography, Box, Alert, Button, Divider, Icon, Card, CardContent } from '@mui/material'
 import { IconExclamationCircle } from '@tabler/icons-react'
 import { LoadingButton } from '@mui/lab'
 
@@ -43,16 +43,16 @@ const SignInPage = () => {
     const { isEnterpriseLicensed, isCloud, isOpenSource } = useConfig()
 
     const usernameInput = {
-        label: 'Username',
+        label: 'Email',
         name: 'username',
         type: 'email',
-        placeholder: 'user@company.com'
+        placeholder: 'seu.email@empresa.com'
     }
     const passwordInput = {
-        label: 'Password',
+        label: 'Senha',
         name: 'password',
         type: 'password',
-        placeholder: '********'
+        placeholder: '••••••••'
     }
     const [usernameVal, setUsernameVal] = useState('')
     const [passwordVal, setPasswordVal] = useState('')
@@ -163,187 +163,284 @@ const SignInPage = () => {
         try {
             await resendVerificationApi.request({ email: usernameVal })
             setAuthError(undefined)
-            setSuccessMessage('Verification email has been sent successfully.')
+            setSuccessMessage('Email de verificação enviado com sucesso.')
             setShowResendButton(false)
         } catch (error) {
-            setAuthError(error.response?.data?.message || 'Failed to send verification email.')
+            setAuthError(error.response?.data?.message || 'Falha ao enviar email de verificação.')
         }
     }
 
     return (
         <>
-            <MainCard maxWidth='sm'>
-                <Stack flexDirection='column' sx={{ width: '480px', gap: 3 }}>
-                    {successMessage && (
-                        <Alert variant='filled' severity='success' onClose={() => setSuccessMessage('')}>
-                            {successMessage}
-                        </Alert>
-                    )}
-                    {authError && (
-                        <Alert icon={<IconExclamationCircle />} variant='filled' severity='error'>
-                            {authError}
-                        </Alert>
-                    )}
-                    {showResendButton && (
-                        <Stack sx={{ gap: 1 }}>
-                            <Button variant='text' onClick={handleResendVerification}>
-                                Resend Verification Email
-                            </Button>
-                        </Stack>
-                    )}
-                    <Stack sx={{ gap: 1 }}>
-                        <Typography variant='h1'>Sign In</Typography>
-                        {isCloud && (
-                            <Typography variant='body2' sx={{ color: theme.palette.grey[600] }}>
-                                Don&apos;t have an account?{' '}
-                                <Link style={{ color: `${theme.palette.primary.main}` }} to='/register'>
-                                    Sign up for free
-                                </Link>
-                                .
-                            </Typography>
-                        )}
-                        {isEnterpriseLicensed && (
-                            <Typography variant='body2' sx={{ color: theme.palette.grey[600] }}>
-                                Have an invite code?{' '}
-                                <Link style={{ color: `${theme.palette.primary.main}` }} to='/register'>
-                                    Sign up for an account
-                                </Link>
-                                .
-                            </Typography>
-                        )}
-                    </Stack>
-                    <form onSubmit={doLogin}>
-                        <Stack sx={{ width: '100%', flexDirection: 'column', alignItems: 'left', justifyContent: 'center', gap: 2 }}>
-                            <Box sx={{ p: 0 }}>
-                                <div style={{ display: 'flex', flexDirection: 'row' }}>
-                                    <Typography>
-                                        Email<span style={{ color: 'red' }}>&nbsp;*</span>
+            <Box
+                sx={{
+                    minHeight: '100vh',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: `linear-gradient(135deg, ${theme.palette.primary.main}22 0%, ${theme.palette.secondary.main}22 100%)`,
+                    p: 2
+                }}
+            >
+                <Card sx={{ maxWidth: 500, width: '100%', borderRadius: 3, boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}>
+                    <CardContent sx={{ p: 4 }}>
+                        <Stack sx={{ gap: 3 }}>
+                            {/* Logo e Título */}
+                            <Stack sx={{ alignItems: 'center', textAlign: 'center', gap: 2 }}>
+                                <Box
+                                    sx={{
+                                        width: 80,
+                                        height: 80,
+                                        borderRadius: '50%',
+                                        background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        color: 'white',
+                                        fontSize: 32,
+                                        fontWeight: 'bold'
+                                    }}
+                                >
+                                    UD
+                                </Box>
+                                <Stack sx={{ gap: 1 }}>
+                                    <Typography variant='h2' sx={{ fontWeight: 700, color: theme.palette.primary.main }}>
+                                        UrbanDev
                                     </Typography>
-                                    <div style={{ flexGrow: 1 }}></div>
-                                </div>
-                                <Input
-                                    inputParam={usernameInput}
-                                    onChange={(newValue) => setUsernameVal(newValue)}
-                                    value={usernameVal}
-                                    showDialog={false}
-                                />
-                            </Box>
-                            <Box sx={{ p: 0 }}>
-                                <div style={{ display: 'flex', flexDirection: 'row' }}>
-                                    <Typography>
-                                        Password<span style={{ color: 'red' }}>&nbsp;*</span>
+                                    <Typography variant='body1' sx={{ color: theme.palette.text.secondary }}>
+                                        Plataforma de Desenvolvimento Inteligente
                                     </Typography>
-                                    <div style={{ flexGrow: 1 }}></div>
-                                </div>
-                                <Input inputParam={passwordInput} onChange={(newValue) => setPasswordVal(newValue)} value={passwordVal} />
-                                <Typography variant='body2' sx={{ color: theme.palette.grey[600], mt: 1, textAlign: 'right' }}>
-                                    <Link style={{ color: theme.palette.primary.main }} to='/forgot-password'>
-                                        Forgot password?
-                                    </Link>
+                                </Stack>
+                            </Stack>
+
+                            {/* Mensagens de Alerta */}
+                            {successMessage && (
+                                <Alert variant='filled' severity='success' onClose={() => setSuccessMessage('')}>
+                                    {successMessage}
+                                </Alert>
+                            )}
+                            {authError && (
+                                <Alert icon={<IconExclamationCircle />} variant='filled' severity='error'>
+                                    {authError}
+                                </Alert>
+                            )}
+                            {showResendButton && (
+                                <Stack sx={{ gap: 1 }}>
+                                    <Button variant='text' onClick={handleResendVerification}>
+                                        Reenviar email de verificação
+                                    </Button>
+                                </Stack>
+                            )}
+
+                            {/* Formulário de Login */}
+                            <form onSubmit={doLogin}>
+                                <Stack sx={{ width: '100%', flexDirection: 'column', alignItems: 'left', justifyContent: 'center', gap: 3 }}>
+                                    <Box sx={{ p: 0 }}>
+                                        <div style={{ display: 'flex', flexDirection: 'row' }}>
+                                            <Typography sx={{ fontWeight: 600, mb: 1 }}>
+                                                Email<span style={{ color: 'red' }}>&nbsp;*</span>
+                                            </Typography>
+                                            <div style={{ flexGrow: 1 }}></div>
+                                        </div>
+                                        <Input
+                                            inputParam={usernameInput}
+                                            onChange={(newValue) => setUsernameVal(newValue)}
+                                            value={usernameVal}
+                                            showDialog={false}
+                                        />
+                                    </Box>
+                                    <Box sx={{ p: 0 }}>
+                                        <div style={{ display: 'flex', flexDirection: 'row' }}>
+                                            <Typography sx={{ fontWeight: 600, mb: 1 }}>
+                                                Senha<span style={{ color: 'red' }}>&nbsp;*</span>
+                                            </Typography>
+                                            <div style={{ flexGrow: 1 }}></div>
+                                        </div>
+                                        <Input inputParam={passwordInput} onChange={(newValue) => setPasswordVal(newValue)} value={passwordVal} />
+                                        <Typography variant='body2' sx={{ color: theme.palette.grey[600], mt: 1, textAlign: 'right' }}>
+                                            <Link style={{ color: theme.palette.primary.main }} to='/forgot-password'>
+                                                Esqueceu sua senha?
+                                            </Link>
+                                        </Typography>
+                                    </Box>
+                                    <LoadingButton
+                                        loading={loading}
+                                        variant='contained'
+                                        sx={{
+                                            borderRadius: 2,
+                                            height: 48,
+                                            textTransform: 'none',
+                                            fontSize: 16,
+                                            fontWeight: 600,
+                                            background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                                            '&:hover': {
+                                                background: `linear-gradient(135deg, ${theme.palette.primary.dark}, ${theme.palette.secondary.dark})`
+                                            }
+                                        }}
+                                        type='submit'
+                                        fullWidth
+                                    >
+                                        Entrar
+                                    </LoadingButton>
+                                </Stack>
+                            </form>
+
+                            {/* Opções de Cadastro */}
+                            {(isCloud || isEnterpriseLicensed) && (
+                                <Stack sx={{ alignItems: 'center', gap: 1 }}>
+                                    <Typography variant='body2' sx={{ color: theme.palette.text.secondary }}>
+                                        Não tem uma conta?{' '}
+                                        <Link style={{ color: theme.palette.primary.main, fontWeight: 600 }} to='/register'>
+                                            Cadastre-se gratuitamente
+                                        </Link>
+                                    </Typography>
+                                </Stack>
+                            )}
+
+                            {/* Divisor SSO */}
+                            {configuredSsoProviders && configuredSsoProviders.length > 0 && (
+                                <Stack sx={{ alignItems: 'center', gap: 2 }}>
+                                    <Divider sx={{ width: '100%', my: 2 }}>
+                                        <Typography variant='body2' sx={{ color: theme.palette.text.secondary }}>
+                                            ou continue com
+                                        </Typography>
+                                    </Divider>
+                                    
+                                    <Stack sx={{ width: '100%', gap: 2 }}>
+                                        {configuredSsoProviders.map(
+                                            (ssoProvider) =>
+                                                ssoProvider === 'google' && (
+                                                    <Button
+                                                        key={ssoProvider}
+                                                        variant='outlined'
+                                                        sx={{
+                                                            borderRadius: 2,
+                                                            height: 48,
+                                                            textTransform: 'none',
+                                                            fontSize: 16,
+                                                            fontWeight: 500,
+                                                            borderColor: theme.palette.divider,
+                                                            '&:hover': {
+                                                                borderColor: theme.palette.primary.main,
+                                                                backgroundColor: theme.palette.primary.main + '10'
+                                                            }
+                                                        }}
+                                                        onClick={() => signInWithSSO(ssoProvider)}
+                                                        startIcon={
+                                                            <Icon>
+                                                                <img src={GoogleSSOLoginIcon} alt={'GoogleSSO'} width={20} height={20} />
+                                                            </Icon>
+                                                        }
+                                                        fullWidth
+                                                    >
+                                                        Continuar com Google
+                                                    </Button>
+                                                )
+                                        )}
+                                        {configuredSsoProviders.map(
+                                            (ssoProvider) =>
+                                                ssoProvider === 'azure' && (
+                                                    <Button
+                                                        key={ssoProvider}
+                                                        variant='outlined'
+                                                        sx={{
+                                                            borderRadius: 2,
+                                                            height: 48,
+                                                            textTransform: 'none',
+                                                            fontSize: 16,
+                                                            fontWeight: 500,
+                                                            borderColor: theme.palette.divider,
+                                                            '&:hover': {
+                                                                borderColor: theme.palette.primary.main,
+                                                                backgroundColor: theme.palette.primary.main + '10'
+                                                            }
+                                                        }}
+                                                        onClick={() => signInWithSSO(ssoProvider)}
+                                                        startIcon={
+                                                            <Icon>
+                                                                <img src={AzureSSOLoginIcon} alt={'MicrosoftSSO'} width={20} height={20} />
+                                                            </Icon>
+                                                        }
+                                                        fullWidth
+                                                    >
+                                                        Continuar com Microsoft
+                                                    </Button>
+                                                )
+                                        )}
+                                        {configuredSsoProviders.map(
+                                            (ssoProvider) =>
+                                                ssoProvider === 'github' && (
+                                                    <Button
+                                                        key={ssoProvider}
+                                                        variant='outlined'
+                                                        sx={{
+                                                            borderRadius: 2,
+                                                            height: 48,
+                                                            textTransform: 'none',
+                                                            fontSize: 16,
+                                                            fontWeight: 500,
+                                                            borderColor: theme.palette.divider,
+                                                            '&:hover': {
+                                                                borderColor: theme.palette.primary.main,
+                                                                backgroundColor: theme.palette.primary.main + '10'
+                                                            }
+                                                        }}
+                                                        onClick={() => signInWithSSO(ssoProvider)}
+                                                        startIcon={
+                                                            <Icon>
+                                                                <img src={GithubSSOLoginIcon} alt={'GithubSSO'} width={20} height={20} />
+                                                            </Icon>
+                                                        }
+                                                        fullWidth
+                                                    >
+                                                        Continuar com GitHub
+                                                    </Button>
+                                                )
+                                        )}
+                                        {configuredSsoProviders.map(
+                                            (ssoProvider) =>
+                                                ssoProvider === 'auth0' && (
+                                                    <Button
+                                                        key={ssoProvider}
+                                                        variant='outlined'
+                                                        sx={{
+                                                            borderRadius: 2,
+                                                            height: 48,
+                                                            textTransform: 'none',
+                                                            fontSize: 16,
+                                                            fontWeight: 500,
+                                                            borderColor: theme.palette.divider,
+                                                            '&:hover': {
+                                                                borderColor: theme.palette.primary.main,
+                                                                backgroundColor: theme.palette.primary.main + '10'
+                                                            }
+                                                        }}
+                                                        onClick={() => signInWithSSO(ssoProvider)}
+                                                        startIcon={
+                                                            <Icon>
+                                                                <img src={Auth0SSOLoginIcon} alt={'Auth0SSO'} width={20} height={20} />
+                                                            </Icon>
+                                                        }
+                                                        fullWidth
+                                                    >
+                                                        Continuar com Auth0
+                                                    </Button>
+                                                )
+                                        )}
+                                    </Stack>
+                                </Stack>
+                            )}
+
+                            {/* Rodapé */}
+                            <Stack sx={{ alignItems: 'center', mt: 2 }}>
+                                <Typography variant='caption' sx={{ color: theme.palette.text.secondary }}>
+                                    © 2024 UrbanDev. Todos os direitos reservados.
                                 </Typography>
-                                {isCloud && (
-                                    <Typography variant='body2' sx={{ color: theme.palette.grey[600], mt: 1, textAlign: 'right' }}>
-                                        <a
-                                            href='https://docs.flowiseai.com/migration-guide/cloud-migration'
-                                            target='_blank'
-                                            rel='noopener noreferrer'
-                                            style={{ color: theme.palette.primary.main }}
-                                        >
-                                            Migrate from existing account?
-                                        </a>
-                                    </Typography>
-                                )}
-                            </Box>
-                            <LoadingButton
-                                loading={loading}
-                                variant='contained'
-                                style={{ borderRadius: 12, height: 40, marginRight: 5 }}
-                                type='submit'
-                            >
-                                Login
-                            </LoadingButton>
-                            {configuredSsoProviders && configuredSsoProviders.length > 0 && <Divider sx={{ width: '100%' }}>OR</Divider>}
-                            {configuredSsoProviders &&
-                                configuredSsoProviders.map(
-                                    (ssoProvider) =>
-                                        //https://learn.microsoft.com/en-us/entra/identity-platform/howto-add-branding-in-apps
-                                        ssoProvider === 'azure' && (
-                                            <Button
-                                                key={ssoProvider}
-                                                variant='outlined'
-                                                style={{ borderRadius: 12, height: 45, marginRight: 5, lineHeight: 0 }}
-                                                onClick={() => signInWithSSO(ssoProvider)}
-                                                startIcon={
-                                                    <Icon>
-                                                        <img src={AzureSSOLoginIcon} alt={'MicrosoftSSO'} width={20} height={20} />
-                                                    </Icon>
-                                                }
-                                            >
-                                                Sign In With Microsoft
-                                            </Button>
-                                        )
-                                )}
-                            {configuredSsoProviders &&
-                                configuredSsoProviders.map(
-                                    (ssoProvider) =>
-                                        ssoProvider === 'google' && (
-                                            <Button
-                                                key={ssoProvider}
-                                                variant='outlined'
-                                                style={{ borderRadius: 12, height: 45, marginRight: 5, lineHeight: 0 }}
-                                                onClick={() => signInWithSSO(ssoProvider)}
-                                                startIcon={
-                                                    <Icon>
-                                                        <img src={GoogleSSOLoginIcon} alt={'GoogleSSO'} width={20} height={20} />
-                                                    </Icon>
-                                                }
-                                            >
-                                                Sign In With Google
-                                            </Button>
-                                        )
-                                )}
-                            {configuredSsoProviders &&
-                                configuredSsoProviders.map(
-                                    (ssoProvider) =>
-                                        ssoProvider === 'auth0' && (
-                                            <Button
-                                                key={ssoProvider}
-                                                variant='outlined'
-                                                style={{ borderRadius: 12, height: 45, marginRight: 5, lineHeight: 0 }}
-                                                onClick={() => signInWithSSO(ssoProvider)}
-                                                startIcon={
-                                                    <Icon>
-                                                        <img src={Auth0SSOLoginIcon} alt={'Auth0SSO'} width={20} height={20} />
-                                                    </Icon>
-                                                }
-                                            >
-                                                Sign In With Auth0 by Okta
-                                            </Button>
-                                        )
-                                )}
-                            {configuredSsoProviders &&
-                                configuredSsoProviders.map(
-                                    (ssoProvider) =>
-                                        ssoProvider === 'github' && (
-                                            <Button
-                                                key={ssoProvider}
-                                                variant='outlined'
-                                                style={{ borderRadius: 12, height: 45, marginRight: 5, lineHeight: 0 }}
-                                                onClick={() => signInWithSSO(ssoProvider)}
-                                                startIcon={
-                                                    <Icon>
-                                                        <img src={GithubSSOLoginIcon} alt={'GithubSSO'} width={20} height={20} />
-                                                    </Icon>
-                                                }
-                                            >
-                                                Sign In With Github
-                                            </Button>
-                                        )
-                                )}
+                            </Stack>
                         </Stack>
-                    </form>
-                </Stack>
-            </MainCard>
+                    </CardContent>
+                </Card>
+            </Box>
         </>
     )
 }

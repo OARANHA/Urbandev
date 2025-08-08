@@ -6,6 +6,9 @@ import Loadable from '@/ui-component/loading/Loadable'
 
 import { RequireAuth } from '@/routes/RequireAuth'
 
+// dashboard routing
+const Dashboard = Loadable(lazy(() => import('@/views/dashboard')))
+
 // chatflows routing
 const Chatflows = Loadable(lazy(() => import('@/views/chatflows')))
 
@@ -63,6 +66,7 @@ const Executions = Loadable(lazy(() => import('@/views/agentexecutions')))
 
 // enterprise features
 const UsersPage = Loadable(lazy(() => import('@/views/users')))
+const CustomersPage = Loadable(lazy(() => import('@/views/customers')))
 const RolesPage = Loadable(lazy(() => import('@/views/roles')))
 const LoginActivityPage = Loadable(lazy(() => import('@/views/auth/loginActivity')))
 const Workspaces = Loadable(lazy(() => import('@/views/workspace')))
@@ -80,7 +84,15 @@ const MainRoutes = {
             path: '/',
             element: (
                 <RequireAuth permission={'chatflows:view'}>
-                    <Chatflows />
+                    <Dashboard />
+                </RequireAuth>
+            )
+        },
+        {
+            path: '/dashboard',
+            element: (
+                <RequireAuth permission={'chatflows:view'}>
+                    <Dashboard />
                 </RequireAuth>
             )
         },
@@ -305,6 +317,14 @@ const MainRoutes = {
             element: (
                 <RequireAuth permission={'users:manage'} display={'feat:users'}>
                     <UsersPage />
+                </RequireAuth>
+            )
+        },
+        {
+            path: '/customers',
+            element: (
+                <RequireAuth permission={'customers:manage'} display={'feat:customers'}>
+                    <CustomersPage />
                 </RequireAuth>
             )
         },

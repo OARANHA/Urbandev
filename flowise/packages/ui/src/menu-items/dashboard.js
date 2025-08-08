@@ -1,5 +1,6 @@
 // assets
 import {
+    IconChartHistogram,
     IconList,
     IconUsersGroup,
     IconHierarchy,
@@ -14,7 +15,6 @@ import {
     IconTestPipe,
     IconMicroscope,
     IconDatabase,
-    IconChartHistogram,
     IconUserEdit,
     IconFileUpload,
     IconClipboardList,
@@ -28,6 +28,7 @@ import {
 
 // constant
 const icons = {
+    IconChartHistogram,
     IconHierarchy,
     IconUsersGroup,
     IconBuildingStore,
@@ -62,6 +63,15 @@ const dashboard = {
     type: 'group',
     children: [
         {
+            id: 'dashboard',
+            title: 'Dashboard',
+            type: 'item',
+            url: '/dashboard',
+            icon: icons.IconChartHistogram,
+            breadcrumbs: true,
+            permission: 'chatflows:view'
+        },
+        {
             id: 'primary',
             title: '',
             type: 'group',
@@ -85,15 +95,6 @@ const dashboard = {
                     permission: 'agentflows:view'
                 },
                 {
-                    id: 'executions',
-                    title: 'Executions',
-                    type: 'item',
-                    url: '/executions',
-                    icon: icons.IconListCheck,
-                    breadcrumbs: true,
-                    permission: 'executions:view'
-                },
-                {
                     id: 'assistants',
                     title: 'Assistants',
                     type: 'item',
@@ -102,6 +103,22 @@ const dashboard = {
                     breadcrumbs: true,
                     permission: 'assistants:view'
                 },
+                {
+                    id: 'executions',
+                    title: 'Executions',
+                    type: 'item',
+                    url: '/executions',
+                    icon: icons.IconListCheck,
+                    breadcrumbs: true,
+                    permission: 'executions:view'
+                }
+            ]
+        },
+        {
+            id: 'tools_and_resources',
+            title: 'Tools & Resources',
+            type: 'group',
+            children: [
                 {
                     id: 'marketplaces',
                     title: 'Marketplaces',
@@ -159,8 +176,8 @@ const dashboard = {
             ]
         },
         {
-            id: 'evaluations',
-            title: 'Evaluations',
+            id: 'analytics',
+            title: 'Analytics & Testing',
             type: 'group',
             children: [
                 {
@@ -197,18 +214,28 @@ const dashboard = {
         },
         {
             id: 'management',
-            title: 'User & Workspace Management',
+            title: 'User & Customer Management',
             type: 'group',
             children: [
                 {
-                    id: 'sso',
-                    title: 'SSO Config',
+                    id: 'users',
+                    title: 'Users',
                     type: 'item',
-                    url: '/sso-config',
-                    icon: icons.IconShieldLock,
+                    url: '/users',
+                    icon: icons.IconUsers,
                     breadcrumbs: true,
-                    display: 'feat:sso-config',
-                    permission: 'sso:manage'
+                    display: 'feat:users',
+                    permission: 'users:manage'
+                },
+                {
+                    id: 'customers',
+                    title: 'Customers',
+                    type: 'item',
+                    url: '/customers',
+                    icon: icons.IconBuildingStore,
+                    breadcrumbs: true,
+                    display: 'feat:customers',
+                    permission: 'customers:manage'
                 },
                 {
                     id: 'roles',
@@ -221,16 +248,6 @@ const dashboard = {
                     permission: 'roles:manage'
                 },
                 {
-                    id: 'users',
-                    title: 'Users',
-                    type: 'item',
-                    url: '/users',
-                    icon: icons.IconUsers,
-                    breadcrumbs: true,
-                    display: 'feat:users',
-                    permission: 'users:manage'
-                },
-                {
                     id: 'workspaces',
                     title: 'Workspaces',
                     type: 'item',
@@ -239,6 +256,16 @@ const dashboard = {
                     breadcrumbs: true,
                     display: 'feat:workspaces',
                     permission: 'workspace:view'
+                },
+                {
+                    id: 'sso',
+                    title: 'SSO Config',
+                    type: 'item',
+                    url: '/sso-config',
+                    icon: icons.IconShieldLock,
+                    breadcrumbs: true,
+                    display: 'feat:sso-config',
+                    permission: 'sso:manage'
                 },
                 {
                     id: 'login-activity',
@@ -253,8 +280,8 @@ const dashboard = {
             ]
         },
         {
-            id: 'others',
-            title: 'Others',
+            id: 'system',
+            title: 'System & Settings',
             type: 'group',
             children: [
                 {
@@ -267,15 +294,6 @@ const dashboard = {
                     display: 'feat:logs',
                     permission: 'logs:view'
                 },
-                // {
-                //     id: 'files',
-                //     title: 'Files',
-                //     type: 'item',
-                //     url: '/files',
-                //     icon: icons.IconFileDatabase,
-                //     breadcrumbs: true,
-                //     display: 'feat:files',
-                // },
                 {
                     id: 'account',
                     title: 'Account Settings',

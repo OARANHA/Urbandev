@@ -9,6 +9,7 @@ import chatflowsUploadsRouter from './chatflows-uploads'
 import componentsCredentialsRouter from './components-credentials'
 import componentsCredentialsIconRouter from './components-credentials-icon'
 import credentialsRouter from './credentials'
+import customersRouter from './customers'
 import datasetRouter from './dataset'
 import documentStoreRouter from './documentstore'
 import evaluationsRouter from './evaluations'
@@ -67,6 +68,8 @@ import workspaceUserRouter from '../enterprise/routes/workspace-user.route'
 import accountRouter from '../enterprise/routes/account.route'
 import loginMethodRouter from '../enterprise/routes/login-method.route'
 import { IdentityManager } from '../IdentityManager'
+import supabaseAuthRouter from './supabase-auth'
+import supabaseDBRouter from './supabase-db'
 
 const router = express.Router()
 
@@ -81,6 +84,7 @@ router.use('/chatflows-uploads', chatflowsUploadsRouter)
 router.use('/components-credentials', componentsCredentialsRouter)
 router.use('/components-credentials-icon', componentsCredentialsIconRouter)
 router.use('/credentials', credentialsRouter)
+router.use('/customers', IdentityManager.checkFeatureByPlan('feat:customers'), customersRouter)
 router.use('/datasets', IdentityManager.checkFeatureByPlan('feat:datasets'), datasetRouter)
 router.use('/document-store', documentStoreRouter)
 router.use('/evaluations', IdentityManager.checkFeatureByPlan('feat:evaluations'), evaluationsRouter)
@@ -135,6 +139,8 @@ router.use('/workspace', workspaceRouter)
 router.use('/workspaceuser', workspaceUserRouter)
 router.use('/account', accountRouter)
 router.use('/loginmethod', loginMethodRouter)
+router.use('/supabase-auth', supabaseAuthRouter)
+router.use('/supabase-db', supabaseDBRouter)
 router.use('/logs', IdentityManager.checkFeatureByPlan('feat:logs'), logsRouter)
 router.use('/files', IdentityManager.checkFeatureByPlan('feat:files'), filesRouter)
 
